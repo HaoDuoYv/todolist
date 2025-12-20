@@ -10,7 +10,8 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'robots.txt', 'apple-touch-icon.png'],
+      // 仅包含 pwa-192.png
+      includeAssets: ['favicon.svg', 'robots.txt', 'apple-touch-icon.png', 'pwa-192.png'],
       manifest: {
         name: '待办事项管理',
         short_name: '待办',
@@ -19,10 +20,11 @@ export default defineConfig({
         background_color: '#ffffff',
         display: 'standalone',
         start_url: '.',
+        // 所有 manifest 图标均使用 pwa-192.png
         icons: [
           { src: '/pwa-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/pwa-512.png', sizes: '512x512', type: 'image/png' },
-          { src: '/pwa-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+          { src: '/pwa-192.png', sizes: '512x512', type: 'image/png' },
+          { src: '/pwa-192.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
         ]
       }
     }),

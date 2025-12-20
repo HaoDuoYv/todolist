@@ -86,6 +86,13 @@
         </div>
       </div>
     </div>
+
+    <!-- 安装提示栏（仅在可安装时显示） -->
+    <div v-if="canInstall && !installed" class="install-banner">
+      <button class="install-btn" @click="promptInstall">
+        <i class="fas fa-download"></i> 安装应用
+      </button>
+    </div>
   </div>
 </template>
 
@@ -102,6 +109,11 @@ const newTask = ref('')
 const tasks = ref<Task[]>([])
 const filter = ref<'all' | 'active' | 'completed'>('all')
 
+// PWA 安装相关
+const deferredPrompt = ref<any | null>(null)
+const canInstall = ref(false)
+const installed = ref(false)
+
 // 从本地存储加载任务
 onMounted(() => {
   const savedTasks = localStorage.getItem('vue-todo-tasks')
@@ -112,6 +124,21 @@ onMounted(() => {
       console.error('Failed to parse tasks from localStorage', e)
     }
   }
+
+  // 监听 beforeinstallprompt
+  window.addEventListener('beforeinstallprompt', (e: any) => {
+    e.preventDefault() // 阻止浏览器自动显示提示，转由我们控制显示时机
+    deferredPrompt.value = e
+    canInstall.value = true
+    console.log('beforeinstallprompt fired')
+  })
+
+  // 监听 appinstalled（安装完成）
+  window.addEventListener('appinstalled', () => {
+    installed.value = true
+    canInstall.value = false
+    console.log('PWA was installed')
+  })
 })
 
 // 保存任务到本地存储
@@ -145,6 +172,20 @@ const removeTask = (id: number) => {
   tasks.value = tasks.value.filter(task => task.id !== id)
 }
 
+// 弹出安装提示
+const promptInstall = async () => {
+  if (!deferredPrompt.value) return
+  deferredPrompt.value.prompt()
+  const choice = await deferredPrompt.value.userChoice
+  if (choice && choice.outcome === 'accepted') {
+    console.log('User accepted the install prompt')
+  } else {
+    console.log('User dismissed the install prompt')
+  }
+  deferredPrompt.value = null
+  canInstall.value = false
+}
+
 // 计算属性：已过滤的任务列表
 const filteredTasks = computed(() => {
   switch (filter.value) {
@@ -168,7 +209,7 @@ const activeCount = computed(() => {
 })
 </script>
 
- <style>
+<style>
  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
     * {
       margin: 0;
@@ -416,7 +457,29 @@ const activeCount = computed(() => {
     .fade-move {
       transition: transform 0.5s ease;
     }
-    
+
+    .install-banner {
+      padding: 12px 20px;
+      display: flex;
+      justify-content: center;
+      background: linear-gradient(90deg, #eef4ff, #fff);
+      border-bottom: 1px solid #eee;
+    }
+    .install-btn {
+      background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      font-weight: 600;
+      box-shadow: 0 6px 12px rgba(71,118,230,0.2);
+    }
+    .install-btn i { font-size: 1rem; }
+
     @media (max-width: 480px) {
       .todo-app {
         max-width: 100%;
