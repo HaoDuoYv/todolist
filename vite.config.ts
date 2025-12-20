@@ -18,7 +18,7 @@ export default defineConfig({
       includeAssets: ['favicon.svg', 'robots.txt', 'apple-touch-icon.png', 'pwa-192.png'],
       manifest: {
         name: '待办事项管理',
-        short_name: '待办',
+        short_name: '任务清单',
         description: '记录你的任务，提升工作效率',
         theme_color: '#4776E6',
         background_color: '#ffffff',
