@@ -10,6 +10,10 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
+      // 在开发环境也启用 PWA（方便本地调试）
+      devOptions: {
+        enabled: true
+      },
       // 仅包含 pwa-192.png
       includeAssets: ['favicon.svg', 'robots.txt', 'apple-touch-icon.png', 'pwa-192.png'],
       manifest: {
@@ -23,7 +27,7 @@ export default defineConfig({
         scope: '/',
         // 所有 manifest 图标均使用 pwa-192.png
         icons: [
-          { src: '/pwa-192.png', sizes: '1x1', type: 'image/png' }
+          { src: '/pwa-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' }
         ]
       }
     }),
