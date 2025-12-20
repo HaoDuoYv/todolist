@@ -19,12 +19,11 @@ export default defineConfig({
         theme_color: '#4776E6',
         background_color: '#ffffff',
         display: 'standalone',
-        start_url: '.',
+        start_url: '/',
+        scope: '/',
         // 所有 manifest 图标均使用 pwa-192.png
         icons: [
-          { src: '/pwa-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/pwa-192.png', sizes: '512x512', type: 'image/png' },
-          { src: '/pwa-192.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+          { src: '/pwa-192.png', sizes: '1x1', type: 'image/png' }
         ]
       }
     }),

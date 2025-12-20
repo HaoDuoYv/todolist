@@ -1,0 +1,18 @@
+{
+    "name": "待办事项管理",
+    "short_name": "'待办",
+    "description": "记录你的任务，提升工作效率",
+    "lang": "zh-CN",
+    "theme_color": "#4776E6",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "start_url": "/",
+    "scope": "/",
+    "icons": [
+        {
+            "src": "/pwa-192.png",
+            "sizes": "1x1",
+            "type": "image/png"
+        }
+    ]
+}

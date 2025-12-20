@@ -81,13 +81,13 @@
           <i class="fas fa-clipboard-list"></i>
           <h3>暂无任务</h3>
           <p v-if="filter === 'all'">开始添加你的第一个任务吧</p>
-          <p v-else-if="filter === 'active'">没有待办任务，太棒了！</p>
+          <p v-else-if="filter === 'active'">没有待办任务，太棒了</p>
           <p v-else>还没有完成的任务</p>
         </div>
       </div>
     </div>
 
-    <!-- 安装提示栏（仅在可安装时显示） -->
+    <!-- 安装提示栏（仅在可安装时显示�? -->
     <div v-if="canInstall && !installed" class="install-banner">
       <button class="install-btn" @click="promptInstall">
         <i class="fas fa-download"></i> 安装应用
@@ -114,7 +114,7 @@ const deferredPrompt = ref<any | null>(null)
 const canInstall = ref(false)
 const installed = ref(false)
 
-// 从本地存储加载任务
+// 从本地存储加载任�?
 onMounted(() => {
   const savedTasks = localStorage.getItem('vue-todo-tasks')
   if (savedTasks) {
@@ -125,28 +125,54 @@ onMounted(() => {
     }
   }
 
-  // 监听 beforeinstallprompt
-  window.addEventListener('beforeinstallprompt', (e: any) => {
-    e.preventDefault() // 阻止浏览器自动显示提示，转由我们控制显示时机
-    deferredPrompt.value = e
+  // ���ȼ�� main.ts �Ƿ��Ѳ���� beforeinstallprompt
+  const dp = (window as any).__deferredPrompt
+  if (dp) {
+    deferredPrompt.value = dp
     canInstall.value = true
-    console.log('beforeinstallprompt fired')
+  }
+
+  // ���� main.ts �ɷ����Զ����¼����� beforeinstallprompt �ڹ��غ󷢳���
+  window.addEventListener('pwa-beforeinstallprompt', (ev: any) => {
+    deferredPrompt.value = ev.detail || (window as any).__deferredPrompt || null
+    canInstall.value = !!deferredPrompt.value
+    console.log('[PWA] received pwa-beforeinstallprompt')
   })
 
-  // 监听 appinstalled（安装完成）
+  // ������װ����¼�
+  window.addEventListener('pwa-appinstalled', () => {
+    installed.value = true
+    canInstall.value = false
+    // ��������� deferredPrompt
+    (window as any).__deferredPrompt = null
+    deferredPrompt.value = null
+    console.log('[PWA] received pwa-appinstalled')
+  })
+
+  // ���ݣ���������ڴ�ʱ����ԭ���¼������߼���
+  window.addEventListener('beforeinstallprompt', (e: any) => {
+    e.preventDefault()
+    deferredPrompt.value = e
+    canInstall.value = true
+    (window as any).__deferredPrompt = e
+    console.log('beforeinstallprompt fired (fallback in App.vue)')
+  })
+
   window.addEventListener('appinstalled', () => {
     installed.value = true
     canInstall.value = false
-    console.log('PWA was installed')
+    (window as any).__deferredPrompt = null
+    deferredPrompt.value = null
+    console.log('PWA was installed (fallback in App.vue)')
   })
 })
 
-// 保存任务到本地存储
+// 保存任务到本地存�?
 watch(tasks, (newTasks) => {
   localStorage.setItem('vue-todo-tasks', JSON.stringify(newTasks))
 }, { deep: true })
 
-// 添加新任务
+// 添加新任�?
 const addTask = () => {
   if (newTask.value.trim() === '') return
   
@@ -159,7 +185,7 @@ const addTask = () => {
   newTask.value = ''
 }
 
-// 切换任务完成状态
+// 切换任务完成状�?
 const toggleTask = (id: number) => {
   const task = tasks.value.find(task => task.id === id)
   if (task) {
@@ -198,12 +224,12 @@ const filteredTasks = computed(() => {
   }
 })
 
-// 计算属性：已完成任务数量
+// 计算属性：已完成任务数�?
 const completedCount = computed(() => {
   return tasks.value.filter(task => task.completed).length
 })
 
-// 计算属性：待完成任务数量
+// 计算属性：待完成任务数�?
 const activeCount = computed(() => {
   return tasks.value.filter(task => !task.completed).length
 })
