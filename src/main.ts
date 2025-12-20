@@ -1,22 +1,22 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 
-// ÌáÇ°¼àÌı beforeinstallprompt / appinstalled£¬·ÀÖ¹ÔÚ App ×é¼ş¹ÒÔØÇ°´í¹ıÊÂ¼ş
+// æå‰ç›‘å¬ beforeinstallprompt / appinstalledï¼Œé˜²æ­¢åœ¨ App ç»„ä»¶æŒ‚è½½å‰é”™è¿‡äº‹ä»¶
 window.addEventListener('beforeinstallprompt', (e: any) => {
     e.preventDefault()
         ; (window as any).__deferredPrompt = e
-    // ÅÉ·¢×Ô¶¨ÒåÊÂ¼şÍ¨ÖªÓ¦ÓÃÒÑ¿É°²×°
+    // æ´¾å‘è‡ªå®šä¹‰äº‹ä»¶é€šçŸ¥åº”ç”¨å·²å¯å®‰è£…
     window.dispatchEvent(new CustomEvent('pwa-beforeinstallprompt', { detail: e }))
     console.log('[PWA] beforeinstallprompt captured in main.ts')
 })
 
 window.addEventListener('appinstalled', () => {
-    // ÅÉ·¢×Ô¶¨ÒåÊÂ¼şÍ¨ÖªÓ¦ÓÃÒÑ°²×°
+    // æ´¾å‘è‡ªå®šä¹‰äº‹ä»¶é€šçŸ¥åº”ç”¨å·²å®‰è£…
     window.dispatchEvent(new CustomEvent('pwa-appinstalled'))
     console.log('[PWA] appinstalled fired')
 })
 
-// ×¢²á PWA Service Worker£¨vite-plugin-pwa Ìá¹©£©£¬¾¡Ôç×¢²á
+// æ³¨å†Œ PWA Service Workerï¼ˆvite-plugin-pwa æä¾›ï¼‰ï¼Œå°½æ—©æ³¨å†Œ
 import { registerSW } from 'virtual:pwa-register'
 
 const updateSW = registerSW({
