@@ -10,22 +10,22 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
-      // ÔÚ¿ª·¢»·¾³Ò²ÆôÓÃ PWA£¨·½±ã±¾µØµ÷ÊÔ£©
+      // åœ¨å¼€å‘ç¯å¢ƒä¹Ÿå¯ç”¨ PWAï¼ˆæ–¹ä¾¿æœ¬åœ°è°ƒè¯•ï¼‰
       devOptions: {
         enabled: true
       },
-      // ½ö°üº¬ pwa-192.png
+      // ä»…åŒ…å« pwa-192.png
       includeAssets: ['favicon.svg', 'robots.txt', 'apple-touch-icon.png', 'pwa-192.png'],
       manifest: {
-        name: '´ı°ìÊÂÏî¹ÜÀí',
-        short_name: '´ı°ì',
-        description: '¼ÇÂ¼ÄãµÄÈÎÎñ£¬ÌáÉı¹¤×÷Ğ§ÂÊ',
+        name: 'å¾…åŠäº‹é¡¹ç®¡ç†',
+        short_name: 'å¾…åŠ',
+        description: 'è®°å½•ä½ çš„ä»»åŠ¡ï¼Œæå‡å·¥ä½œæ•ˆç‡',
         theme_color: '#4776E6',
         background_color: '#ffffff',
         display: 'standalone',
         start_url: '/',
         scope: '/',
-        // ËùÓĞ manifest Í¼±ê¾ùÊ¹ÓÃ pwa-192.png
+        // æ‰€æœ‰ manifest å›¾æ ‡å‡ä½¿ç”¨ pwa-192.png
         icons: [
           { src: '/pwa-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' }
         ]
