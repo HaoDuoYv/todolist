@@ -86,11 +86,28 @@
         </div>
       </div>
     </div>
+
+    <!-- 新增：PWA 安装横幅 -->
+    <div v-if="showInstallBanner" class="install-banner">
+      <div class="install-content">
+        <div class="install-text">
+          <i class="fas fa-download"></i>
+          <div>
+            <div class="title">将此应用安装到主屏幕</div>
+            <div class="subtitle">离线使用、更快访问</div>
+          </div>
+        </div>
+        <div class="install-actions">
+          <button class="install-btn" @click="triggerInstall">安装</button>
+          <button class="dismiss-btn" @click="dismissInstall">暂不</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 
 interface Task {
   id: number;
@@ -101,6 +118,8 @@ interface Task {
 const newTask = ref('')
 const tasks = ref<Task[]>([])
 const filter = ref<'all' | 'active' | 'completed'>('all')
+const deferredPrompt = ref<any>(null)
+const showInstallBanner = ref(false)
 
 // 从本地存储加载任务
 onMounted(() => {
@@ -112,6 +131,9 @@ onMounted(() => {
       console.error('Failed to parse tasks from localStorage', e)
     }
   }
+
+  window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt)
+  window.addEventListener('appinstalled', onAppInstalled)
 })
 
 // 保存任务到本地存储
@@ -166,6 +188,45 @@ const completedCount = computed(() => {
 const activeCount = computed(() => {
   return tasks.value.filter(task => !task.completed).length
 })
+
+// PWA 安装相关
+const onBeforeInstallPrompt = (e: Event) => {
+  const ev = e as any
+  if (ev && typeof ev.preventDefault === 'function') {
+    ev.preventDefault() // 阻止自动弹出，保存事件用于稍后触发
+    deferredPrompt.value = ev
+    // 仅在移动设备或窄屏时展示（可选判断）
+    showInstallBanner.value = true
+  }
+}
+
+const onAppInstalled = () => {
+  deferredPrompt.value = null
+  showInstallBanner.value = false
+}
+
+onUnmounted(() => {
+  window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt)
+  window.removeEventListener('appinstalled', onAppInstalled)
+})
+
+const triggerInstall = async () => {
+  if (!deferredPrompt.value) return
+  try {
+    await deferredPrompt.value.prompt()
+    const choice = await deferredPrompt.value.userChoice
+    // 可根据 choice.outcome 做统计或提示
+  } catch (err) {
+    // ignore
+  } finally {
+    deferredPrompt.value = null
+    showInstallBanner.value = false
+  }
+}
+
+const dismissInstall = () => {
+  showInstallBanner.value = false
+}
 </script>
 
  <style>
@@ -416,7 +477,54 @@ const activeCount = computed(() => {
     .fade-move {
       transition: transform 0.5s ease;
     }
-    
+
+    /* 新增：安装横幅样式 */
+    .install-banner {
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: 20px;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+    }
+    .install-content {
+      width: 100%;
+      max-width: 520px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .install-text {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      color: #333;
+    }
+    .install-text .title { font-weight: 600; }
+    .install-text .subtitle { font-size: 0.85rem; color: #666; }
+    .install-actions { display:flex; gap:8px; }
+    .install-btn {
+      background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .dismiss-btn {
+      background: transparent;
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
     @media (max-width: 480px) {
       .todo-app {
         max-width: 100%;
