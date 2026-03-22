@@ -10,7 +10,7 @@ const routes = [
     path: '/',
     component: () => import('../App.vue'),
     meta: {
-      title: '´ı°ìÊÂÏî'
+      title: 'ä»£åŠäº‹é¡¹'
     }
 
   }
