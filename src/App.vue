@@ -587,6 +587,7 @@ body {
 /* Tasks Container */
 .tasks-container {
   padding: 0 24px 24px;
+  min-height: 280px;
   max-height: 400px;
   overflow-y: auto;
 }
@@ -709,6 +710,11 @@ body {
   text-align: center;
   padding: 48px 24px;
   color: var(--primary-dark);
+  min-height: 232px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .empty-icon {
